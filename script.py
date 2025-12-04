@@ -1,5 +1,7 @@
 import random
 
+DETAILED_LOG = True
+
 def is_prime(n, k=5):
     """Пробабилистичен тест за простота на Милър-Рабин."""
     if n < 2:
@@ -93,11 +95,22 @@ def generate_keys(bits=1024):
     print("🔐 Генериране на ключове:")
     print(f"p = {p}")
     print(f"q = {q}")
-    print(f"n = p × q = {n}")
-    print(f"φ(n) = (p - 1) × (q - 1) = {phi_n}")
+
+    if DETAILED_LOG:
+        print(f"n = p × q = {p} × {q} = {n}")
+        print(f"φ(n) = (p - 1) × (q - 1) = ({p - 1}) × ({q - 1}) = {phi_n}")
+    else:
+        print(f"n = p × q = {n}")
+        print(f"φ(n) = (p - 1) × (q - 1) = {phi_n}")
+
     print(f"e = {e}")
-    print(f"d = {d}")
-    print("-" * 50)
+
+    if DETAILED_LOG:
+        print(f"d = e⁻¹ mod φ(n) = {e}⁻¹ mod {phi_n} = {d}")
+        print("-" * 60)
+    else:
+        print(f"d = {d}")
+        print("-" * 50)
 
     return (n, e), (n, d)
 
@@ -109,9 +122,20 @@ def encrypt(message, pubkey):
     for ch in message:
         m = ord(ch)
         c = mod_exp(m, e, n)
-        print(f"Символ: '{ch}' → ASCII: {m} → шифър: {c}")
+        if DETAILED_LOG:
+            print(f"Символ: '{ch}'")
+            print(f" → ASCII стойност: M = ord('{ch}') = {m}")
+            print(f" → Шифър: C = M^e (mod n) = {m}^{e} (mod {n}) = {c}")
+        else:
+            print(f"Символ: '{ch}' → ASCII: {m} → шифър: {c}")
+
         cipher_nums.append(c)
-    print("-" * 50)
+
+    if DETAILED_LOG:
+        print("-" * 60)
+    else:
+        print("-" * 50)
+
     return cipher_nums
 
 def decrypt(cipher_nums, privkey):
@@ -122,9 +146,20 @@ def decrypt(cipher_nums, privkey):
     for c in cipher_nums:
         m = mod_exp(c, d, n)
         ch = chr(m)
-        print(f"Шифър: {c} → ASCII: {m} → символ: '{ch}'")
+
+        if DETAILED_LOG:
+            print(f"Шифър: {c}")
+            print(f" → Дешифрирано: M = C^d (mod n) = {c}^{d} (mod {n}) = {m}")
+            print(f" → Символ: chr({m}) = '{ch}'")
+        else:
+            print(f"Шифър: {c} → ASCII: {m} → символ: '{ch}'")
+
         result += ch
-    print("-" * 50)
+
+    if DETAILED_LOG:
+        print("-" * 60)
+    else:
+        print("-" * 50)
     return result
 
 # Демонстрация на генериране на ключове и криптиране/декриптиране
