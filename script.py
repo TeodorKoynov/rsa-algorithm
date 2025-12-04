@@ -29,7 +29,7 @@ def is_prime(n, k=5):
     return True
 
 def generate_prime(bits):
-    """Генерира случайно просто число с даден брой битове."""
+    """Генерира случайно просто число с дължина 'bits'."""
     while True:
         # Генериране на случайно число с указаната дължина в битове
         candidate = random.getrandbits(bits)
@@ -89,34 +89,54 @@ def generate_keys(bits=1024):
         while gcd(e, phi_n) != 1:
             e += 2
     d = modinv(e, phi_n)
+
+    print("🔐 Генериране на ключове:")
+    print(f"p = {p}")
+    print(f"q = {q}")
+    print(f"n = p × q = {n}")
+    print(f"φ(n) = (p - 1) × (q - 1) = {phi_n}")
+    print(f"e = {e}")
+    print(f"d = {d}")
+    print("-" * 50)
+
     return (n, e), (n, d)
 
 def encrypt(message, pubkey):
     """RSA криптиране: връща списък от числови шифротекстове за всеки символ."""
     n, e = pubkey
     cipher_nums = []
+    print("✉️ Криптиране на съобщението:")
     for ch in message:
         m = ord(ch)
         c = mod_exp(m, e, n)
+        print(f"Символ: '{ch}' → ASCII: {m} → шифър: {c}")
         cipher_nums.append(c)
+    print("-" * 50)
     return cipher_nums
 
 def decrypt(cipher_nums, privkey):
     """RSA декриптиране: връща възстановения низ от списък числови шифротекстове."""
     n, d = privkey
     result = ""
+    print("🔓 Декриптиране на съобщението:")
     for c in cipher_nums:
         m = mod_exp(c, d, n)
-        result += chr(m)
+        ch = chr(m)
+        print(f"Шифър: {c} → ASCII: {m} → символ: '{ch}'")
+        result += ch
+    print("-" * 50)
     return result
 
 # Демонстрация на генериране на ключове и криптиране/декриптиране
 pub, priv = generate_keys(bits=16)
+
 print(f"Публичен ключ: (n={pub[0]}, e={pub[1]})")
 print(f"Частен ключ: (n={priv[0]}, d={priv[1]})")
-msg = "HELLO"
-print(f"Оригинално съобщение: {msg}")
-cipher = encrypt(msg, pub)
-print("Шифровани данни:", cipher)
+print("=" * 50)
+
+message = "HELLO"
+print(f"Оригинално съобщение: {message}")
+cipher = encrypt(message, pub)
+print(f"Шифрирано съобщение (числа): {cipher}")
 plain = decrypt(cipher, priv)
-print("Дешифрирано съобщение:", plain)
+print(f"Дешифрирано съобщение: {plain}")
